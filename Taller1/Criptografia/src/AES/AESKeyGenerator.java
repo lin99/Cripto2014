@@ -5,12 +5,21 @@
  */
 package AES;
 
+import java.util.Formatter;
+import java.util.List;
+
 /**
  *
  * @author chucho
  */
 public class AESKeyGenerator {
 
+    public int[][] keys;
+    // Como las roundConstant no son muchas las coloque de una ves aca y como solo se realiza el exor con el primer miembro
+    // de la llave anterior quite el resto de ceros
+    public static final int[] roundConstant
+            = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36};
+    //La sbox
     public static final int[][] sbox
             = {{0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76},
             {0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0},
@@ -28,13 +37,13 @@ public class AESKeyGenerator {
             {0x70, 0x3e, 0xb5, 0x66, 0x48, 0x03, 0xf6, 0x0e, 0x61, 0x35, 0x57, 0xb9, 0x86, 0xc1, 0x1d, 0x9e},
             {0xe1, 0xf8, 0x98, 0x11, 0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf},
             {0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16}};
-
+    // Haca van a estar todos los key generators por ahora solo esta el de 128 
     public AESKeyGenerator(int[] key) {
         if (key.length == 16) {
             AES128(key);
         }
     }
-
+    // El campo de multiplicación de galois
     public static int galoisFieldMultiplication(int a, int b) {
         int p = 0;
         for (int i = 0; i < 8; i++) {
@@ -51,12 +60,57 @@ public class AESKeyGenerator {
         }
         return p;
     }
-
+    // metodo para dado un byte (en este caso int) retornar su sustitución
     private int substitution(int toSubstitute) {
         return sbox[toSubstitute >> 4][toSubstitute & 0x0f];
     }
-
+    //aqui esta el procedimiento para AES 128
     private void AES128(int[] key) {
-        
+        keys = new int[44][4];
+        int counter = 0;
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                keys[i][j] = key[counter];
+                counter++;
+            }
+        }
+        for (int i = 4; i < 44; i++) {
+            System.arraycopy(keys[i - 1], 0, keys[i], 0, 4);
+            if (i % 4 == 0) {
+                //Rot word + Substitution
+                int aux = keys[i][0];
+                for (int j = 0; j < 3; j++) {
+                    keys[i][j] = this.substitution(keys[i][j + 1]);
+                }
+                keys[i][3] = this.substitution(aux);
+                //Round constant
+                keys[i][0] ^= this.roundConstant[(i / 4) - 1];
+            } 
+            //xored with w[i-4]
+            for (int j = 0; j < 4; j++) {
+                keys[i][j] ^= keys[i - 4][j];
+            }
+
+        }
+    }
+    // metodo usado para imprimir las claves
+    public String toString() {
+        Formatter formatter = new Formatter();
+        String aux = "";
+        for (int[] i : this.keys) {
+            for (int j : i) {
+                if (j < 16) {
+                    formatter.format("0");
+                }
+                formatter.format("%h ", j);
+            }
+            formatter.format("\n");
+        }
+        return formatter.toString();
+    }
+
+    public static void main(String args[]) {
+        int[] key = {0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c};
+        System.out.println(new AESKeyGenerator(key));
     }
 }
