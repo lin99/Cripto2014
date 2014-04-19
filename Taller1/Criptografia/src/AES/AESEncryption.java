@@ -14,6 +14,7 @@ public class AESEncryption {
         int nCol = n/N_FIL;
         int[] cyphertext = new int[n];
         int[][] state = new int[N_FIL][nCol];
+        int[][] subKey;
         AESActions actions = new AESActions();
         AESKeyGenerator keyGenerator = new AESKeyGenerator( key );
         int Nr = 10; //Por lo pronto con 10 Rouds luego cambiar.
@@ -27,25 +28,24 @@ public class AESEncryption {
         
         //Stage 1:
         //Llave temporal
-        int[][] llave = {   {0x2b, 0x28, 0xab, 0x09}, 
-                    {0x7e, 0xae, 0xf7, 0xcf},
-                    {0x15, 0xd2, 0x15, 0x4f},
-                    {0x16, 0xa6, 0x88, 0x3c}, };
-        state = actions.addRoundKey(state, llave);
+        subKey = keyGenerator.getSubKey(0);
+        state = actions.addRoundKey(state, subKey);
         
         //Stage 2: Nr-1 Rounds
         for( int i=0; i<Nr-1; i++){
             state = actions.subBytes(state, AESActions.subBytes);
-            print( state, "Round"+i+" SB ");
+            //print( state, "Round"+i+" SB ");
             state = actions.shiftRows(state);
             state = actions.MixColumns(state, AESActions.poli);
-            print( state, "Round"+i);
-            //Falta obtener Key
-            //state = actions.addRoundKey(state, key);
+            //print( state, "Round"+i);
+            subKey = keyGenerator.getSubKey(i+1);
+            state = actions.addRoundKey(state, subKey);
         }
         //Stage 3:
-        
-        
+        state = actions.subBytes(state, AESActions.subBytes);
+        state = actions.shiftRows(state);
+        subKey = keyGenerator.getSubKey(Nr);
+        state = actions.addRoundKey(state, subKey);
         //Reescribir el cyphertext
         for( int i = 0; i < nCol; i++){
             for (int j = 0; j < N_FIL; j++) {
