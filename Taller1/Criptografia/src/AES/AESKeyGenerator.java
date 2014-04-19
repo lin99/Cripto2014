@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package AES;
 
 import java.util.Formatter;
@@ -60,10 +55,12 @@ public class AESKeyGenerator {
         }
         return p;
     }
+    
     // metodo para dado un byte (en este caso int) retornar su sustitución
     private int substitution(int toSubstitute) {
         return sbox[toSubstitute >> 4][toSubstitute & 0x0f];
     }
+    
     //aqui esta el procedimiento para AES 128
     private void AES128(int[] key) {
         keys = new int[44][4];
@@ -74,6 +71,7 @@ public class AESKeyGenerator {
                 counter++;
             }
         }
+        
         for (int i = 4; i < 44; i++) {
             System.arraycopy(keys[i - 1], 0, keys[i], 0, 4);
             if (i % 4 == 0) {
@@ -93,6 +91,7 @@ public class AESKeyGenerator {
 
         }
     }
+    
     // metodo usado para imprimir las claves
     public String toString() {
         Formatter formatter = new Formatter();
@@ -110,7 +109,8 @@ public class AESKeyGenerator {
     }
 
     public static void main(String args[]) {
-        int[] key = {0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c};
+        int[] key = {0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6,
+                    0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c};
         System.out.println(new AESKeyGenerator(key));
     }
 }
