@@ -6,7 +6,6 @@
 package AES;
 
 import java.util.Formatter;
-import java.util.List;
 
 /**
  *
@@ -14,7 +13,8 @@ import java.util.List;
  */
 public class AESKeyGenerator {
 
-    public int[][] keys;
+    //Arreglo con las llaves generadas
+    private int[][] keys;
     // Como las roundConstant no son muchas las coloque de una ves aca y como solo se realiza el exor con el primer miembro
     // de la llave anterior quite el resto de ceros
     public static final int[] roundConstant
@@ -37,12 +37,25 @@ public class AESKeyGenerator {
             {0x70, 0x3e, 0xb5, 0x66, 0x48, 0x03, 0xf6, 0x0e, 0x61, 0x35, 0x57, 0xb9, 0x86, 0xc1, 0x1d, 0x9e},
             {0xe1, 0xf8, 0x98, 0x11, 0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf},
             {0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16}};
+
     // Haca van a estar todos los key generators por ahora solo esta el de 128 
     public AESKeyGenerator(int[] key) {
         if (key.length == 16) {
             AES128(key);
         }
     }
+    // Este metodo retorna la subkey necesitada
+    public int[][] getSubKey(int index) {
+        index = index * 4;
+        int[][] toReturn = new int[4][4];
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                toReturn[i][j] = this.keys[index + j][i];
+            }
+        }
+        return toReturn;
+    }
+
     // El campo de multiplicación de galois
     public static int galoisFieldMultiplication(int a, int b) {
         int p = 0;
@@ -60,10 +73,12 @@ public class AESKeyGenerator {
         }
         return p;
     }
+
     // metodo para dado un byte (en este caso int) retornar su sustitución
     private int substitution(int toSubstitute) {
         return sbox[toSubstitute >> 4][toSubstitute & 0x0f];
     }
+
     //aqui esta el procedimiento para AES 128
     private void AES128(int[] key) {
         keys = new int[44][4];
@@ -85,7 +100,7 @@ public class AESKeyGenerator {
                 keys[i][3] = this.substitution(aux);
                 //Round constant
                 keys[i][0] ^= this.roundConstant[(i / 4) - 1];
-            } 
+            }
             //xored with w[i-4]
             for (int j = 0; j < 4; j++) {
                 keys[i][j] ^= keys[i - 4][j];
@@ -93,7 +108,9 @@ public class AESKeyGenerator {
 
         }
     }
+
     // metodo usado para imprimir las claves
+    @Override
     public String toString() {
         Formatter formatter = new Formatter();
         String aux = "";
@@ -111,6 +128,12 @@ public class AESKeyGenerator {
 
     public static void main(String args[]) {
         int[] key = {0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c};
-        System.out.println(new AESKeyGenerator(key));
+        int[][] aux = new AESKeyGenerator(key).getSubKey(1);
+        for (int[] i : aux) {
+            for (int j : i) {
+                System.out.printf("%h ", j);
+            }
+            System.out.println("");
+        }
     }
 }
