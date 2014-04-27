@@ -38,7 +38,6 @@ public class AESEncryption {
             state = actions.shiftRows(state);
             state = actions.MixColumns(state, AESActions.poli);
             //print( state, "Round"+i);
-            
             subKey = keyGenerator.getSubKey(i+1);
             state = actions.addRoundKey(state, subKey);
         }
@@ -46,7 +45,6 @@ public class AESEncryption {
         state = actions.subBytes(state, AESActions.subBytes);
         state = actions.shiftRows(state);
         subKey = keyGenerator.getSubKey(Nr);
-        System.out.println("Key "+  Nr + " -> " + subKey);
         state = actions.addRoundKey(state, subKey);
         //Reescribir el cyphertext
         for( int i = 0; i < nCol; i++){
