@@ -2,3 +2,7 @@ Taller1/Criptografia/nbproject/private/private.properties
 Taller1/Criptografia/build/classes/AES/AESKeyGenerator.class
 *.class
 *.properties
+*.class
+Taller1/Criptografia/build/classes/AES/AESActions.class
+*.properties
+*.class
