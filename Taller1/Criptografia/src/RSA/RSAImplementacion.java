@@ -63,7 +63,7 @@ public class RSAImplementacion {
         }
         
         for( int i=3; i*i<N; i+=2 ){
-            if( primes.get(i)==1 )
+            if( isPrime[i]==1 )
                 continue;
             primes.add(i);
             for( int j = i*i; j*j< N; j+=i ){
@@ -72,16 +72,22 @@ public class RSAImplementacion {
         }
     }
     
-    public static int powerMod( int e, int b, int n ){
-        //String bin = Integer.toBinaryString( b );
+    public static int powerMod( int a, int b, int n ){
+        System.out.println(" **"+b+"** ");
+        String bin = Integer.toBinaryString( b );
+        int tam = bin.length();
         int z = 1;
         
-        for( int i=0 ; (1<<i)<=b ; i++){
-            if( ( b&(1<<i) )>0 ){
-                z = ( ( (z*z)%n )*e)%n;
+        for( int i=tam-1 ; i>=0 ; i--){
+            System.out.println(" -> "+bin.charAt(i));
+            if( ( b&(1l<<i) )>0 ){
+                System.out.print("1");
+                z = ( ( (z*z)%n )*a)%n;
             } else {
+                System.out.print("0");
                 z = (z*z)%n;
             }
+            System.out.println(" z: "+z);
         }
         return z;
     }
@@ -98,7 +104,7 @@ public class RSAImplementacion {
             n = in.nextInt();
             b = in.nextInt();
             
-            e = inverso(e, totem(n) );
+            //e = inverso(e, totem(n) );
             
             System.out.println(" Cypher: "+powerMod(b, e, n));
         }
