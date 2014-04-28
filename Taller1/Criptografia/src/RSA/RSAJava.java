@@ -28,10 +28,13 @@ public class RSAJava {
         int tam = (int) (new Random().nextDouble()*129);
         e = new BigInteger(tam, new Random());
         //1 < e < phi such that GCD(e, phi)=1
-        while( phi.compareTo(e)>0 && phi.gcd(e)==BigInteger.ONE ){
+        
+        while( phi.compareTo(e)>0 && !phi.gcd(e).equals(BigInteger.ONE) ){
             tam = (int) (new Random().nextDouble()*129);
             e = new BigInteger(tam, new Random());
+            
         }
+        
         //Calcular el inverso multiplicativo
         d = e.modInverse(phi);
     }
@@ -125,30 +128,72 @@ public class RSAJava {
         return new BigInteger( sb.toString() );
     }
     
+    public void cifrando( Scanner in ){
+        BigInteger p, q, e, m, c, mm;
+        System.out.println("*************Cifrado RSA************");
+        System.out.print(" Ingresar P: ");
+        p = in.nextBigInteger();
+        if( p.equals(BigInteger.ZERO) )
+            return;
+        System.out.print(" Ingresar Q: ");
+        q = in.nextBigInteger();
+        System.out.print(" Ingresar E: ");
+        e = in.nextBigInteger();
+        System.out.print(" Ingresar el Mensaje: ");
+        m = in.nextBigInteger();
+
+        c = Encryption(m, p, q, e);
+        System.out.println(" EL mensaje cifrado es: "+c+"\n\n");
+
+        System.out.println("*************Descifrado RSA************");
+        mm = Decryption( c );
+        System.out.println(" EL mensaje DesCifrado es: "+mm);
+        System.out.println(" Es igual al original: "+mm.equals(m)+"\n\n");
+    }
+    
+    public void cifrando( BigInteger m ){
+        BigInteger c, mm;
+        
+        System.out.println("*************Cifrado RSA************");
+        System.out.println("El mensaje original es: "+m);
+        c = Encryption(m, 1);
+        System.out.println("Llave publica: < "+p+" , "+n+" >");
+        System.out.println("Llave publica: < "+q+" , "+n+" >");
+        System.out.println("E: "+e+" D: "+d);
+        System.out.println("El mensaje cifrado es: " + c);
+        
+        System.out.println("\n\n*************Descifrado RSA************");
+        mm = Decryption( c );
+        System.out.println(" EL mensaje DesCifrado es: "+mm);
+        System.out.println(" Es igual al original: "+mm.equals(m)+"\n\n");
+        
+    }
+    
     public static void main( String args[] ){
         Scanner in = new Scanner( System.in );
-        BigInteger p, q, e, m, c, mm;
+        RSAJava rsaj = new RSAJava();
+        BigInteger mensaje;
+        int opc;
         
+        
+        //Menu de opciones
         while( true ) {
-            System.out.println("*************Cifrado RSA************");
-            System.out.print(" Ingresar P: ");
-            p = in.nextBigInteger();
-            if( p.equals(BigInteger.ZERO) )
+            System.out.println("\t*** Menu ***");
+            System.out.println("  1) Cifrado conociendo p, q, e ");
+            System.out.println("  2) Cifrado desde 0");
+            System.out.println("  *) Otra opcion salir ");
+            System.out.print("Ingrese la opcion: ");
+            opc = in.nextInt();
+            
+            if( opc==1 ){
+                rsaj.cifrando(in);
+            } else if( opc==2 ){
+                System.out.print("Ingrese el mensaje: ");
+                mensaje = in.nextBigInteger();
+                rsaj.cifrando( mensaje );
+            } else {
                 break;
-            System.out.print(" Ingresar Q: ");
-            q = in.nextBigInteger();
-            System.out.print(" Ingresar E: ");
-            e = in.nextBigInteger();
-            System.out.print(" Ingresar el Mensaje: ");
-            m = in.nextBigInteger();
-            
-            c = Encryption(m, p, q, e);
-            System.out.println(" EL mensaje cifrado es: "+c+"\n\n");
-            
-            System.out.println("*************Descifrado RSA************");
-            mm = Decryption( c );
-            System.out.println(" EL mensaje DesCifrado es: "+mm);
-            System.out.println(" Es igual al original: "+mm.equals(m)+"\n\n");
+            }
         }
     }
     
