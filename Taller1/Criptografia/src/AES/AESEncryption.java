@@ -78,6 +78,19 @@ public class AESEncryption {
         
         int[] cifrado = aese.Encryption(mensaje, llave);
         
+         System.out.println(" ");
+        System.out.println(" Mensaje ");
+        for( int i=0; i < cifrado.length; i++)
+            System.out.print(" "+Integer.toString(mensaje[i], 16) );
+        System.out.println("");
+        
+        System.out.println(" ");
+        System.out.println(" LLave ");
+        for( int i=0; i < cifrado.length; i++)
+            System.out.print(" "+Integer.toString(llave[i], 16) );
+        System.out.println("");
+        
+        System.out.println("");
         System.out.println(" TEXTO CIFRADO ");
         for( int i=0; i < cifrado.length; i++)
             System.out.print(" "+Integer.toString(cifrado[i], 16) );

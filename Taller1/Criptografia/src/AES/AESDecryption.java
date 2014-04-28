@@ -32,14 +32,14 @@ public class AESDecryption {
         //Llave temporal
         subKey = keyGenerator.getSubKey(Nr);
         state = actions.addRoundKey(state, subKey);
-        state = actions.subBytes(state, AESActions.subBytes);
+        state = actions.subBytes(state, AESActions.InvSBox);
         state = actions.invShiftRows(state);
         
         //Stage 2: Nr-1 Rounds
         for( int i = Nr - 1 ; i > 0; i--){
             state = actions.addRoundKey(state, subKey);
             state = actions.MixColumns(state, AESActions.poliInv);
-            state = actions.subBytes(state, AESActions.subBytes);
+            state = actions.subBytes(state, AESActions.InvSBox);
             //print( state, "Round"+i+" SB ");
             
             state = actions.invShiftRows(state);
@@ -85,6 +85,19 @@ public class AESDecryption {
         
         int[] cifrado = aese.Decryption(mensaje, llave);
         
+        System.out.println(" ");
+        System.out.println(" mensaje ");
+        for( int i=0; i < cifrado.length; i++)
+            System.out.print(" "+Integer.toString(mensaje[i], 16) );
+        System.out.println("");
+        
+        System.out.println(" ");
+        System.out.println(" LLave ");
+        for( int i=0; i < cifrado.length; i++)
+            System.out.print(" "+Integer.toString(llave[i], 16) );
+        System.out.println("");
+        
+        System.out.println(" ");
         System.out.println(" TEXTO DESCRIFRADO ");
         for( int i=0; i < cifrado.length; i++)
             System.out.print(" "+Integer.toString(cifrado[i], 16) );
